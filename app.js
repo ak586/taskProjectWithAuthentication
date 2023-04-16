@@ -23,6 +23,21 @@ const User = mongoose.model('user',schema);
 
 app.get('/', (req, res) => res.send("<h1>hey it's working</h1>"));
 
+app.post('/users/new', async (req, res) => {
+    const { name, email, password } = req.body;
+    console.log(req.body);
+ await User.create({
+        name,
+        email,
+        password,
+ });
+    //status code 201 means created
+    res.status(201).json({
+        success: true,
+        message: "Registered successfully",
+    });
+})
+
 app.get('/users/all', async (req, res) => {
     const users = await User.find({ });
 
@@ -31,6 +46,15 @@ app.get('/users/all', async (req, res) => {
         users,
     })
 })
+
+app.get('/userid/special', (req, res) => {
+    res.json({
+        success: true,
+        message: "bhutiya banaya",
+    })
+})
+
+
 
 //dynamic routing
 app.get("/userid/:id", async(req, res) => {
@@ -47,21 +71,6 @@ app.get("/userid/:id", async(req, res) => {
 
 
 
-app.post('/users/new', async (req, res) => {
-    const { name, email, password } = req.body;
-    console.log(req.body);
- await User.create({
-        name,
-        email,
-        password,
- });
-    //status code 201 means created
-    res.status(201).json({
-        success: true,
-        message: "Registered successfully",
-    });
-})
 
 
-
-app.listen(3000, () => console.log("server running at 3000"));
+app.listen(3001, () => console.log("server running at 3001"));
