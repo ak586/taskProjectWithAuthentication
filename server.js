@@ -4,4 +4,4 @@ import { connectDB } from "./data/database.js";
 
 connectDB();
 
-app.listen(process.env.PORT, () => console.log("server started"));
+app.listen(process.env.PORT, () => console.log(process.env.PORT));
