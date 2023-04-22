@@ -1,5 +1,6 @@
 import express from "express";
 import UserRouter from './routes/user.js'
+import taskRouter from './routes/task.js'
 import { config } from 'dotenv'
 import cookieParser from "cookie-parser";
 config({
@@ -15,7 +16,8 @@ app.use(cookieParser());
 
 
 //using routes
-app.use("/api/v1/users",UserRouter);
+app.use("/api/v1/users", UserRouter);
+app.use("/api/v1/task",taskRouter);
 
 //connect to the database
 app.get('/', (req, res) => res.send("<h1>hey it's working</h1>"));
