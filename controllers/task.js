@@ -1,6 +1,7 @@
+import ErrorHandler from "../middlewares/error.js";
 import { Task } from "../model/task.js";
 
-export const newTask = async (req, res) => {
+export const newTask = async (req, res,next) => {
     const { title, description } = req.body;
     await Task.create({
         title,
@@ -13,7 +14,7 @@ export const newTask = async (req, res) => {
     });
 }
 
-export const getMyTask = async (req, res) => {
+export const getMyTask = async (req, res,next) => {
     const myId = req.user._id;
     const tasks = await Task.find({ user: myId });
     res.status(200).json({
@@ -24,14 +25,12 @@ export const getMyTask = async (req, res) => {
 }
 
 // updates the task completion status
-export const updateTask = async (req, res) => {
+export const updateTask = async (req, res,next) => {
     const task = await Task.findById(req.params.id);
+    if (!task) return next(new ErrorHandler("task not found",404));
     // reverse the completion status
     task.isCompleted = !task.isCompleted;
-    if (!task) return res.status(404).json({
-        success: false,
-        message:"task not found"
-    })
+   
     await task.save();
     res.status(200).json({
         success: true,
@@ -40,13 +39,10 @@ export const updateTask = async (req, res) => {
 };
 
 //delete task
-export const deleteTask = async(req, res) => {
+export const deleteTask = async(req, res,next) => {
     const task = await Task.findById(req.params.id);
 
-    if (!task) return res.status(404).json({
-        success: false,
-        message:"task not found"
-    })
+    if (!task) return next(new ErrorHandler("Task not found",404));
     
     await task.deleteOne();
     res.status(200).json({

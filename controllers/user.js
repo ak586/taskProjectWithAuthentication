@@ -1,6 +1,7 @@
 import { User } from "../model/user.js";
 import bcrypt from 'bcrypt'
 import { sendCookie } from "../utils/features.js";
+import ErrorHandler from "../middlewares/error.js";
 
 
 export const getAllUsers = async (req, res) => {
@@ -8,14 +9,13 @@ export const getAllUsers = async (req, res) => {
 };
 
 
-export const register = async (req, res) =>
+export const register = async (req, res,next) =>
 {
     const { name, email, password } = req.body;
     let user = await User.findOne({ email });
-    if (user) return res.status(404).json({
-        success: false,
-        message:"user already exists"
-    })
+
+
+    if (user) return next(new ErrorHandler("User already exists",400))
 
     const hashedPassword = await bcrypt.hash(password, 10)
     
@@ -38,18 +38,14 @@ export const getMyProile = async (req, res) =>
     });
 };
 
-export const login = async (req, res) =>
+export const login = async (req, res,next) =>
 {
 
     const { email, password } = req.body;
     //check user existence
     const user = await User.findOne({ email }).select("+password");
     //user not registerd
-    console.log("inside login");
-    if (!user) return res.status(404).json({
-        success: false,
-        message:"invalid email"
-    })
+    if (!user) return next(new ErrorHandler("User doesn't exist ",404));
    
     //compare password matches or not
     const isMatch = await bcrypt.compare(password, user.password);
