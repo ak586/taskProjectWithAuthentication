@@ -4,6 +4,7 @@ import taskRouter from './routes/task.js'
 import { config } from 'dotenv'
 import cookieParser from "cookie-parser";
 import { errorMiddleware } from "./middlewares/error.js";
+import cors from 'cors';
 config({
     path: "./data/config.env"
 })
@@ -14,11 +15,16 @@ export const app = express();
 
 app.use(express.json());//express.json route ke pehle use karna hai
 app.use(cookieParser());
-
+app.use(cors({
+    origin: [process.env.FRONTEND_URL],
+    methods: ['GET', "POST", "PUT", "DELETE"],
+    credentials:true
+}));
 
 //using routes
 app.use("/api/v1/users", UserRouter);
-app.use("/api/v1/task",taskRouter);
+app.use("/api/v1/task", taskRouter);
+
 
 //using error middle ware
 app.use(errorMiddleware);

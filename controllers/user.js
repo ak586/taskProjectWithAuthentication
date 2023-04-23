@@ -13,7 +13,7 @@ export const register = async (req, res,next) =>
     let user = await User.findOne({ email });
 
 
-    if (user) return next(new ErrorHandler("User already exists",400))
+    if (user) return next(new ErrorHandler("User already exists",404))
 
     const hashedPassword = await bcrypt.hash(password, 10)
     
@@ -73,7 +73,9 @@ export const login = async (req, res,next) =>
 export const logout = (req, res,next) => {
    try {
     res.status(200).cookie("token", "", {
-        expires: new Date(Date.now())
+        expires: new Date(Date.now()),
+        sameSite:process.env.NODE_ENV==='Development'?'lax':'none',
+        secure: process.env.NODE_ENV==='Development'?false:true
     }).json({
         success: true,
         user:req.user
@@ -82,6 +84,5 @@ export const logout = (req, res,next) => {
        next(error);
    }
 }
-
 
 
